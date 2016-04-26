@@ -25,7 +25,7 @@ phi1 = phi1 + phi0;
 ip = 0;
 PlotTrasferResults;
 
-%% trasfer to right
+%% trasfer to acceleration
 Vh   = VHomman(mu0,R1,R2);
 Vmax = Vparapolic(mu0,R1)-1;
 deltaV = linspace(Vh,Vmax,100);
