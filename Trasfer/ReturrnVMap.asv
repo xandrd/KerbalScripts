@@ -3,7 +3,7 @@ Constants
 figure('Position',[100 100 600 900],'defaultAxesFontWeight','bold','defaultAxesFontsize',12);
 
 %% trasfer to left turn
-Vmin = 1e-3; % Homman trasfer
+Vmin = 1e-3; % free falling
 Vh   = VHomman(mu0,R2,R1)-1e-3;
 V = linspace(Vmin,Vh,100);
 perpV = V; % perpendicular velosity
@@ -19,8 +19,8 @@ phi_rot = phi0 + phi1; % Total true anomaly change
 T_to_peregi = -1.*TimeTransfer(mu0,a,e,phi0,0);
 T_to_cross  = TimeTransfer(mu0,a,e,0,phi1);
 T = T_to_peregi + T_to_cross;
-M  = 2*pi + TimeToMeanAnomaly(mu0,R1,pi-phi_rot,-1*T); % Initial phase of target planet
-M0 = pi+TimeToMeanAnomaly(mu0,R2,0,T); % End phase of source planet
+M  = TimeToMeanAnomaly(mu0,R1,phi_rot,T); % Initial phase of target planet
+M0 = TimeToMeanAnomaly(mu0,R2,0,T); % End phase of source planet
 
 phi1 =  pi - (phi0 + phi1);
 ip = 0;
@@ -30,9 +30,9 @@ PlotTrasferResults;
 
 
 %% trasfer to acceleration
-Vmin = 1e-3; % homman trasfer
-Vh = VHomman(mu0,R2,R1)-1e-3; % with trigonometrical correction, free falling
-V  = linspace(Vmin,Vh,100);
+Vmin = 1e-3; % free falling
+Vh = VHomman(mu0,R2,R1)-1e-3; % with trigonometrical correction
+V  = linspace(Vmin,Vh,10);
 parV = Vh - V; % paralel velocity after burn
 
 
@@ -40,13 +40,12 @@ parV = Vh - V; % paralel velocity after burn
 
 phi0 = pi;
 phi1 = PhiOrbital(e,a,R1);
-phi1 = -1*phi1; % right side of the orbit
 
 T = -1.*TimeTransfer(mu0,a,e,phi0,phi1);
-M  = 2*pi + TimeToMeanAnomaly(mu0,R1,phi1,-1.*T); % Initial phase of target planet
-M0 = pi+TimeToMeanAnomaly(mu0,R2,0,T); % End phase of source planet
+M = phi1+TimeToMeanAnomaly(mu0,R1,phi1,-1.*T); % Initial phase of target planet
+M0 = TimeToMeanAnomaly(mu0,R2,0,T); % End phase of source planet
 
 
 ip = 1;
-deltaV = V;
+deltaV = V - Vh;
 PlotTrasferResults;

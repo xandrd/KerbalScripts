@@ -1,12 +1,12 @@
 % script for interplanetary trasfer
 Constants
-figure('Position',[100 100 600 900],'defaultAxesFontWeight','bold','defaultAxesFontsize',12);
+figure('Position',[100 100 600 900],'defaultTextFontWeight','bold','defultTextFontSize',12);
 
 %% trasfer to left
 Vh   = VHomman(mu0,R1,R2);
 Vmax = Vparapolic(mu0,R1) - 1;
-V = linspace(Vh,Vmax,100);
-perpV = V - Vh; % perpendicular velosity
+deltaV = linspace(Vh,Vmax,10);
+perpV = deltaV - Vh; % perpendicular velosity
 
 al = atan(perpV ./ Vh ) + pi./2; % Initial velosity angle
 totalV = sqrt(perpV.^2 + Vh.^2);
@@ -24,15 +24,14 @@ M0 = TimeToMeanAnomaly(mu0,R1,0,T); % End phase of source planet
 
 phi1 = phi1 + phi0;
 ip = 0;
-deltaV = V - Vh;
 PlotTrasferResults;
 
 %% trasfer to acceleration
 Vh   = VHomman(mu0,R1,R2);
 Vmax = Vparapolic(mu0,R1)-1;
-V = linspace(Vh,Vmax,100);
+deltaV = linspace(Vh,Vmax,100);
 
-[a,e] = OrbitalParam(mu0,V,R1,pi./2);
+[a,e] = OrbitalParam(mu0,deltaV,R1,pi./2);
 
 phi0 = 0;
 phi1 = PhiOrbital(e,a,R2);
@@ -43,5 +42,4 @@ M0 = TimeToMeanAnomaly(mu0,R1,0,T); % End phase of source planet
 
 
 ip = 1;
-deltaV = V - Vh;
 PlotTrasferResults;
