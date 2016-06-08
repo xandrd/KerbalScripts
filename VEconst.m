@@ -1,4 +1,4 @@
-function V2 = getVEconst(mu,V1,R1,R2)
+function V2 = VEconst(mu,V1,R1,R2)
 % Calculate V from conservation for Energy
 % V2 - velocity at R2
 % V1 - velocirty at R1
