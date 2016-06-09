@@ -14,13 +14,13 @@ R2 = 20726155264; %Duna (note: orbit is not round)
 %R_2 = 9832684544; %Eve (note: orbit is not round)
 
 % % Orbital period s
-% Tp1 = 9203545; % Kerbin
-% Tp2 = 17315400; % Duna
+Tp1 = 9203545; % Kerbin
+Tp2 = 17315400; % Duna
 % %Tp2 = 5657?995; % Eve
 % 
 % % Angular velosity rad/s
-% Wp1 = 2*pi/Tp1; % Kerbin
-% Wp2 = 2*pi/Tp2; % Duna
+Wp1 = 2*pi/Tp1; % Kerbin
+Wp2 = 2*pi/Tp2; % Duna
 
 % Planetary Velocities m/s
 Vp1 = 9284.5; %Kerbin
