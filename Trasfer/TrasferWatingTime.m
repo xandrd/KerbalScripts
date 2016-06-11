@@ -6,8 +6,8 @@ figure;
 %% Departure, 2 cases (sa, st)
 Vh   = VHomman(mu0,R1,R2);
 Vmax = Vparapolic(mu0,R1)-1;
-Vmax = Vh + 500;
-V = linspace(Vh,Vmax,10);
+%Vmax = Vh + 20;
+V = linspace(Vh,Vmax,100);
 [a,e] = OrbitalParam(mu0,V,R1,pi./2);
 
 % departure with accleration (sa)
@@ -35,8 +35,9 @@ deltaVs = V - Vh;
 %% Return, 2 cases (da, dt)
 Vmin = 1e-3; % homman trasfer
 Vh = VHomman(mu0,R2,R1)-1e-3; % with trigonometrical correction, free falling
-Vmax = 1000;
-V  = linspace(Vmin,Vmax,11);
+Vmax = Vh;
+%Vmax = 60;
+V  = linspace(Vmin,Vmax,101);
 
 % return with acceleration (da)
 parV = Vh - V; % paralel velocity after burn
@@ -78,7 +79,8 @@ deltaVd = V;
 dW = Wp2 - Wp1;
 [dV1_arr, dV2_arr] = meshgrid(deltaVs, deltaVd);
 Tp = abs(2*pi/dW)./24./3600; % maximum waiting time
-Dlim = [120 140];
+Dlim = [3500 6000];
+dV = dV1_arr + dV2_arr;
 
 subplot(2,2,1)
 % prepare block
@@ -91,7 +93,7 @@ x = ( W2_arr - W1_arr ) ./ dW;
 x(x<0) = x(x<0) + abs(2*pi/dW);
 
 % plot block
-pcolor(dV1_arr, dV2_arr, x./3600./24);
+pcolor(dV1_arr, dV2_arr, x./3600./24 .* (dV1_arr + dV2_arr));
 colorbar; shading flat; ax = gca; ax.CLim = Dlim; colormap(jet);
 title('sa da');
 
@@ -106,7 +108,7 @@ x = ( W2_arr - W1_arr ) ./ dW;
 x(x<0) = x(x<0) + abs(2*pi/dW);
 
 % plot block
-pcolor(dV1_arr, dV2_arr, x./3600./24);
+pcolor(dV1_arr, dV2_arr, x./3600./24 .* (dV1_arr + dV2_arr));
 colorbar; shading flat; ax = gca; ax.CLim = Dlim; colormap(jet);
 title('st da');
 
@@ -120,9 +122,10 @@ W2 = (pi - Mdt);
 % calc block
 x = ( W2_arr - W1_arr ) ./ dW;
 x(x<0) = x(x<0) + abs(2*pi/dW);
+dV(x./3600./24 > 10)  = NaN;
 
 % plot block
-pcolor(dV1_arr, dV2_arr, x./3600./24);
+pcolor(dV1_arr, dV2_arr, dV);
 colorbar; shading flat; ax = gca; ax.CLim = Dlim; colormap(jet);
 title('sa dt');
 
@@ -136,9 +139,10 @@ W2 = (pi - Mdt);
 % calc block
 x = ( W2_arr - W1_arr ) ./ dW;
 x(x<0) = x(x<0) + abs(2*pi/dW);
+dV(x./3600./24 > 10)  = NaN;
 
 % plot block
-pcolor(dV1_arr, dV2_arr, x./3600./24);
+pcolor(dV1_arr, dV2_arr, dV);
 colorbar; shading flat; ax = gca; ax.CLim = Dlim; colormap(jet);
 title('st dt');
 
