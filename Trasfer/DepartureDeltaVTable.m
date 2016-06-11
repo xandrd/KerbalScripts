@@ -51,10 +51,12 @@ V_perp = V_sign.*sqrt( V_sign.*(v_soi.^2 - (V_Homman - V_Kerbin).^2) );
 
 figure('Position',[100 100 450 600],'defaultLineLineWidth',2);
 ax = subplot(3,1,[1:2]);
+CL = ax.ColorOrder;
+
 hold on;
-plot(v,v);
-plot(v,V_par);
+plot(v,v,'k');
 plot(v,V_perp);
+plot(v,V_par);
 ax.YLim = [-1000 4000];
 ax.XTick = [0:200:ax.XLim(end)];
 grid on;
@@ -62,9 +64,9 @@ title('Velocity augmentation'); ylabel('V, m/s');
 legend('Burn after SOI','Collinear acceleration','Perpendicular acceleration','Location','best');
 ax = subplot(3,1,3);
 hold on;
-plot(v,100.*v./v);
-plot(v,100.*V_par./v);
+plot(v,100.*v./v,'k');
 plot(v,100.*V_perp./v);
+plot(v,100.*V_par./v);
 title('Effecency'); xlabel('\Delta V, m/s'); ylabel('%');
 ax.YLim = [-500 900];
 ax.YTick = [-500:200:900];
