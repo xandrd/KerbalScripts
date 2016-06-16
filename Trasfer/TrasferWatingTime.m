@@ -1,13 +1,12 @@
 % display wating time of specifict trasfers
 % relatively ugly scripts
 Constants;
-figure;
 
 %% Departure, 2 cases (sa, st)
 Vh   = VHomman(mu0,R1,R2);
 Vmax = Vparapolic(mu0,R1)-1;
 %Vmax = Vh + 20;
-V = linspace(Vh,Vmax,100);
+V = linspace(Vh,Vmax,3*100);
 [a,e] = OrbitalParam(mu0,V,R1,pi./2);
 
 % departure with accleration (sa)
@@ -37,7 +36,7 @@ Vmin = 1e-3; % homman trasfer
 Vh = VHomman(mu0,R2,R1)-1e-3; % with trigonometrical correction, free falling
 Vmax = Vh;
 %Vmax = 60;
-V  = linspace(Vmin,Vmax,101);
+V  = linspace(Vmin,Vmax,3*101);
 
 % return with acceleration (da)
 parV = Vh - V; % paralel velocity after burn
@@ -79,72 +78,119 @@ deltaVd = V;
 dW = Wp2 - Wp1;
 [dV1_arr, dV2_arr] = meshgrid(deltaVs, deltaVd);
 Tp = abs(2*pi/dW)./24./3600; % maximum waiting time
-Dlim = [3500 6000];
 dV = dV1_arr + dV2_arr;
 
+%% Total time 
+Dlim = [0 250];
+figure('Position',[100 100 800 600]);
+
 subplot(2,2,1)
-% prepare block
 W1 = (Msa + Tsa.*dW);
 W2 = (pi - Mda);
-[W1_arr, W2_arr] = meshgrid(W1, W2);
-
-% calc block
-x = ( W2_arr - W1_arr ) ./ dW;
-x(x<0) = x(x<0) + abs(2*pi/dW);
-
-% plot block
-pcolor(dV1_arr, dV2_arr, x./3600./24 .* (dV1_arr + dV2_arr));
-colorbar; shading flat; ax = gca; ax.CLim = Dlim; colormap(jet);
-title('sa da');
+plot_trasfer_time(W1, W2, dW, dV1_arr, dV2_arr, Dlim);
+title('Start: accel., Return: accel.');
 
 subplot(2,2,2);
-% prepare block
 W1 = (Mst + Tst.*dW);
 W2 = (pi - Mda);
-[W1_arr, W2_arr] = meshgrid(W1, W2);
-
-% calc block
-x = ( W2_arr - W1_arr ) ./ dW;
-x(x<0) = x(x<0) + abs(2*pi/dW);
-
-% plot block
-pcolor(dV1_arr, dV2_arr, x./3600./24 .* (dV1_arr + dV2_arr));
-colorbar; shading flat; ax = gca; ax.CLim = Dlim; colormap(jet);
-title('st da');
+plot_trasfer_time(W1, W2, dW, dV1_arr, dV2_arr, Dlim);
+title('Start: turn, Return: accel.');
 
 % % % % % % %
 subplot(2,2,3)
-% prepare block
 W1 = (Msa + Tsa.*dW);
 W2 = (pi - Mdt);
-[W1_arr, W2_arr] = meshgrid(W1, W2);
-
-% calc block
-x = ( W2_arr - W1_arr ) ./ dW;
-x(x<0) = x(x<0) + abs(2*pi/dW);
-dV(x./3600./24 > 10)  = NaN;
-
-% plot block
-pcolor(dV1_arr, dV2_arr, dV);
-colorbar; shading flat; ax = gca; ax.CLim = Dlim; colormap(jet);
-title('sa dt');
+plot_trasfer_time(W1, W2, dW, dV1_arr, dV2_arr, Dlim);
+title('Start: accel., Return: turn');
 
 
 subplot(2,2,4)
-% prepare block
 W1 = (Mst + Tst.*dW);
 W2 = (pi - Mdt);
-[W1_arr, W2_arr] = meshgrid(W1, W2);
+plot_trasfer_time(W1, W2, dW, dV1_arr, dV2_arr, Dlim);
+title('Start: turn, Return: turn');
 
-% calc block
-x = ( W2_arr - W1_arr ) ./ dW;
-x(x<0) = x(x<0) + abs(2*pi/dW);
-dV(x./3600./24 > 10)  = NaN;
-
-% plot block
-pcolor(dV1_arr, dV2_arr, dV);
-colorbar; shading flat; ax = gca; ax.CLim = Dlim; colormap(jet);
-title('st dt');
+%
+axd = axes();
+h = text(-0.1,0.4, '\Delta V_{return}, m/s'); h.Rotation = 90;
+h = text(1.04,0.4, 'Waiting time, days'); h.Rotation = 90;
+text(0.4,-0.1, '\Delta V_{start}, m/s');
+axd.Visible = 'off';
 
 
-return
+%% Zoom
+figure('Position',[100 100 800 300]);
+Dlim = [130 140];
+
+ax1 = subplot(1,2,1);
+W1 = (Mst + Tst.*dW);
+W2 = (pi - Mda);
+[~,cb] = plot_trasfer_time(W1, W2, dW, dV1_arr, dV2_arr, Dlim);
+title('Start: turn, Return: accel.');
+ylabel(cb,'Waiting time, days');
+
+ax2 = subplot(1,2,2);
+Dlim = [265 285];
+%Dlim = [0 280];
+
+[ch, cb] = plot_trasfer_time(W1, W2, dW, dV1_arr, dV2_arr, Dlim);
+title('Total time');
+[Tst_arr, Tda_arr] = meshgrid(Tst,Tda);
+ch.CData = ch.CData + (Tst_arr + Tda_arr)./24./3600;
+ylabel(cb,'Mission time, days');
+
+
+ax1.XLim = [0 200];
+ax1.YLim = ax1.XLim;
+ax2.XLim = ax1.XLim;
+ax2.YLim = ax1.XLim;
+
+axd = axes();
+h = text(-0.1,0.4, '\Delta V_{return}, m/s'); h.Rotation = 90;
+%h = text(1.04,0.4, 'Waiting time, days'); h.Rotation = 90;
+text(0.4,-0.08, '\Delta V_{start}, m/s');
+axd.Visible = 'off';
+
+%% Time Zero
+figure('Position',[100 100 800 250]);
+Dlim = [0 10];
+
+ax1 = subplot(1,3,1);
+W1 = (Msa + Tsa.*dW);
+W2 = (pi - Mdt);
+[ch, cb] = plot_trasfer_time(W1, W2, dW, dV1_arr, dV2_arr, Dlim);
+title('Start: turn, Return: accel.');
+nidx = ch.CData > 10;
+ch.CData(nidx) = NaN; 
+ylabel(cb,'Waiting time, days');
+
+ax2 = subplot(1,3,2);
+Dlim = [4500 6500];
+[ch, cb] = plot_trasfer_time(W1, W2, dW, dV1_arr, dV2_arr, Dlim);
+title('\Delta V budget');
+ch.CData = dV1_arr + dV2_arr;
+ch.CData(nidx) = NaN; 
+ylabel(cb,'\Sigma\DeltaV, m/s','interpreter','tex');
+
+
+ax3 = subplot(1,3,3);
+Dlim = [70 100];
+[ch, cb] = plot_trasfer_time(W1, W2, dW, dV1_arr, dV2_arr, Dlim);
+title('Total time');
+[Tsa_arr, Tdt_arr] = meshgrid(Tsa,Tdt);
+ch.CData = ch.CData + (Tsa_arr + Tdt_arr)./24./3600;
+ch.CData(nidx) = NaN; 
+ylabel(cb,'Mission time, days');
+
+ax1.Position(2) = ax1.Position(2) + 0.1;
+ax1.Position(4) = ax1.Position(4) - 0.1;
+ax2.Position(2) = ax2.Position(2) + 0.1;
+ax2.Position(4) = ax2.Position(4) - 0.1;
+ax3.Position(2) = ax3.Position(2) + 0.1;
+ax3.Position(4) = ax3.Position(4) - 0.1;
+
+axd = axes();
+h = text(-0.1,0.4, '\Delta V_{return}, m/s'); h.Rotation = 90;
+%h = text(1.04,0.4, 'Time, days'); h.Rotation = 90;
+text(0.4,-0.03, '\Delta V_{start}, m/s');
+axd.Visible = 'off';
